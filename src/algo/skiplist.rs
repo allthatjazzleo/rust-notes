@@ -1,7 +1,6 @@
 use prettytable::{color, format::Alignment, Attr, Cell, Row, Table};
 use rand::prelude::*;
 use std::cell::RefCell;
-use std::iter;
 use std::rc::Rc;
 
 type RealNode = Rc<RefCell<Node>>;
@@ -35,7 +34,7 @@ pub struct SkipList {
 }
 
 impl SkipList {
-    fn new(level: usize) -> Self {
+    pub fn new(level: usize) -> Self {
         SkipList {
             head: None,
             tails: vec![None; level],
@@ -53,7 +52,7 @@ impl SkipList {
         n
     }
 
-    fn append(&mut self, offset: u64, data: String) {
+    pub fn append(&mut self, offset: u64, data: String) {
         let level = 1 + if self.head.is_none() {
             self.max_level_idx
         } else {
@@ -74,7 +73,7 @@ impl SkipList {
         self.length += 1;
     }
 
-    fn level_path(&self, offset: u64, found_level: usize) {
+    pub fn level_path(&self, offset: u64, found_level: usize) {
         // Create the table
         let mut table = Table::new();
         if let Some(ref head) = self.head {
@@ -134,7 +133,7 @@ impl SkipList {
         }
     }
 
-    fn find(&self, offset: u64) -> Option<(String, usize)> {
+    pub fn find(&self, offset: u64) -> Option<(String, usize)> {
         match self.head {
             Some(ref head) => {
                 let mut start_level = self.max_level_idx;
@@ -175,17 +174,17 @@ impl SkipList {
     }
 }
 
-pub fn generate(len: usize) -> String {
-    const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let mut rng = rand::thread_rng();
-    let one_char = || CHARSET[rng.gen_range(0..CHARSET.len())] as char;
-    iter::repeat_with(one_char).take(len).collect()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::iter;
 
+    fn generate(len: usize) -> String {
+        const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let mut rng = rand::thread_rng();
+        let one_char = || CHARSET[rng.gen_range(0..CHARSET.len())] as char;
+        iter::repeat_with(one_char).take(len).collect()
+    }
     #[test]
     fn run_test() {
         let mut skip_list = SkipList::new(6);
